@@ -1,0 +1,30 @@
+---
+- include_vars: "group_vars/vars.yml"
+
+- name: add postgresql apt key
+  apt_key: url=http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc state=present
+
+- name: add postgresql repository
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt/ jessie-pgdg main' state=present update_cache=yes
+
+- name: install postgresql
+  apt: pkg={{ item }} state=present
+  with_items:
+    - libpq-dev
+    - python-psycopg2
+    - postgresql-9.6
+    - postgresql-client-9.6
+    - postgresql-contrib-9.6
+    - pgtop
+  environment:
+    LC_ALL: en_US.UTF-8
+
+- name: create monit postgresql configuration
+  template: >
+    src=postgresql.monit.j2 dest=/etc/monit/conf.d/postgresql
+    owner=root group=root mode=0644
+  notify:
+    - reload monit
+
+- name: ensure postgresql is running
+  service: name=postgresql state=running enabled=yes
