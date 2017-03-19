@@ -1,6 +1,4 @@
 ---
-- include_vars: "group_vars/vars.yml"
-
 - name: add postgresql apt key
   apt_key: url=http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc state=present
 
